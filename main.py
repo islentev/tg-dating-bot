@@ -18,11 +18,15 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
+print("DEBUG OPENROUTER_API_KEY exists:", bool(OPENROUTER_API_KEY), flush=True)
+print("DEBUG TELEGRAM_BOT_TOKEN exists:", bool(TELEGRAM_BOT_TOKEN), flush=True)
+print("DEBUG OPENROUTER_MODEL:", OPENROUTER_MODEL, flush=True)
+
 if not OPENROUTER_API_KEY:
-    raise RuntimeError("В .env не найден OPENROUTER_API_KEY")
+    raise RuntimeError("OPENROUTER_API_KEY not found in environment")
 
 if not TELEGRAM_BOT_TOKEN:
-    raise RuntimeError("В .env не найден TELEGRAM_BOT_TOKEN")
+    raise RuntimeError("TELEGRAM_BOT_TOKEN not found in environment")
 
 SESSION_HTTP = requests.Session()
 SESSION_HTTP.trust_env = False
