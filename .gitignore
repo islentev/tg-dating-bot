@@ -1,0 +1,7 @@
+.env
+.venv
+data
+screen.jpg
+notepad
+python
+__pycache__/
