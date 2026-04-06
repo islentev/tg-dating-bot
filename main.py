@@ -256,12 +256,12 @@ def handle_text(chat_id: int, text: str) -> None:
         return
 
     if text in ["/first", "/reply", "/followup", "/invite"]:
-    mode_map = {
-        "/first": "first",
-        "/reply": "reply",
-        "/followup": "followup",
-        "/invite": "invite",
-    }
+    	mode_map = {
+            "/first": "first",
+            "/reply": "reply",
+            "/followup": "followup",
+            "/invite": "invite",
+    	}
 
     SESSION["mode"] = mode_map[text]
 
@@ -336,10 +336,6 @@ def main() -> None:
         except Exception as e:
             log("Ошибка polling:", e)
             time.sleep(3)
-<<<<<<< Updated upstream
 
-
-if __name__ == "__main__":
-    main()
-=======
->>>>>>> Stashed changes
+   if __name__ == "__main__":
+       main()
