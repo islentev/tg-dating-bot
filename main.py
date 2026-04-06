@@ -133,7 +133,6 @@ def call_openrouter(user_text: str, image_paths: list[str], mode: str) -> str:
         {
             "type": "text",
             "text": (
-                    (
                     "Ты помощник по переписке в дейтинге.\n\n"
 
                     "Ты помогаешь взрослому мужчине писать женщинам живо, естественно и уверенно. "
