@@ -229,7 +229,7 @@ def handle_text(chat_id: int, text: str) -> None:
         tg_send_message(
             chat_id,
             "Бот запущен.\n\n"
-    	    "Как пользоваться:\n"
+            "Как пользоваться:\n"
             "1. Отправь /new\n"
             "2. Пришли фото анкеты, скрины переписки или текст\n"
             "3. Выбери режим:\n"
@@ -246,39 +246,49 @@ def handle_text(chat_id: int, text: str) -> None:
         SESSION["photos"] = []
         SESSION["text"] = ""
         SESSION["mode"] = "first"
-        tg_send_message(chat_id, "Новая сессия создана. Пришли фото и/или текст, потом выбери режим: /first /reply /followup /invite")
+        tg_send_message(
+            chat_id,
+            "Новая сессия создана. Пришли фото и/или текст, потом выбери режим: /first /reply /followup /invite"
+        )
         return
 
     if text == "/clear":
         SESSION["photos"] = []
         SESSION["text"] = ""
+        SESSION["mode"] = "first"
         tg_send_message(chat_id, "Сессия очищена.")
         return
 
     if text in ["/first", "/reply", "/followup", "/invite"]:
-    	mode_map = {
+        mode_map = {
             "/first": "first",
             "/reply": "reply",
             "/followup": "followup",
             "/invite": "invite",
-    	}
+        }
 
-    SESSION["mode"] = mode_map[text]
+        SESSION["mode"] = mode_map[text]
 
-    if not SESSION["photos"] and not SESSION["text"]:
-        tg_send_message(chat_id, "Сначала пришли фото анкеты, переписку или текст.")
+        if not SESSION["photos"] and not SESSION["text"]:
+            tg_send_message(chat_id, "Сначала пришли фото анкеты, переписку или текст.")
+            return
+
+        try:
+            result = call_openrouter(
+                user_text=SESSION["text"],
+                image_paths=SESSION["photos"],
+                mode=SESSION["mode"]
+            )
+            tg_send_message(chat_id, result)
+        except Exception as e:
+            tg_send_message(chat_id, f"Ошибка при запросе к модели:\n{e}")
         return
 
-    try:
-        result = call_openrouter(
-            user_text=SESSION["text"],
-            image_paths=SESSION["photos"],
-            mode=SESSION["mode"]
-        )
-        tg_send_message(chat_id, result)
-    except Exception as e:
-        tg_send_message(chat_id, f"Ошибка при запросе к модели:\n{e}")
-    return
+    SESSION["text"] += ("\n" + text if SESSION["text"] else text)
+    tg_send_message(
+        chat_id,
+        "Текст сохранен. Можешь прислать еще фото или выбрать режим: /first /reply /followup /invite"
+    )
 
 
 def handle_photo(chat_id: int, message: dict) -> None:
@@ -297,7 +307,10 @@ def handle_photo(chat_id: int, message: dict) -> None:
     tg_download_file(file_path, str(save_path))
     SESSION["photos"].append(str(save_path))
 
-    tg_send_message(chat_id, "Фото сохранено. Можешь прислать еще фото, текст или команду /go")
+    tg_send_message(
+        chat_id,
+        "Фото сохранено. Можешь прислать еще фото, текст или выбрать режим: /first /reply /followup /invite"
+    )
 
 
 def process_update(update: dict) -> None:
@@ -337,5 +350,5 @@ def main() -> None:
             log("Ошибка polling:", e)
             time.sleep(3)
 
-   if __name__ == "__main__":
-       main()
+if __name__ == "__main__":
+    main()
